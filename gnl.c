@@ -6,7 +6,7 @@
 /*   By: jpepin <jpepin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/03 05:47:22 by jpepin            #+#    #+#             */
-/*   Updated: 2016/12/27 06:44:25 by jpepin           ###   ########.fr       */
+/*   Updated: 2016/12/27 09:18:23 by jpepin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-# define BUFF_SIZE 5
+# define BUFF_SIZE 1024
 
 static char			*ft_norm(char *s1, int pot)
 {
@@ -100,6 +100,7 @@ int					GNL(int fd, char **line)
 		return (1);
 	while ((ret = read(fd, buf, BUFF_SIZE)) > 0)
 	{
+    printf("BUFFER::%s\n", buf);
 		i = ft_norm2(line, buf, ret);
 		if (i + 1 < ret && (get = ft_concat(get, &buf[i] + 1, ret - i - 1)))
 			return (1);

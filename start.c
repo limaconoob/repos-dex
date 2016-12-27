@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 
 // Descritpion du module repos-dex:
@@ -44,22 +45,52 @@ void check_dir(t_lbstat *lib, char *coucou)
     while ((dp = readdir(dir)))
     { if (NCMP("README.md", dp->d_name, 9) == 0 && !dp->d_name[9])
       { openner(coucou, dp->d_name, path);
-       // printf("OPENNER::%s\n", path);
+        printf("OPENNER::%s\n", path);
+      //  SéCURITé
+        fd = open(path, O_RDONLY);
+        char **line;
+       /* while (GNL(fd, line))
+        { printf("LINE::%s\n", *line); } */
+        while (GNL(fd, line))
+        { if ((*line)[0] == '#' && (*line)[1] == ' ')
+          { printf("LVL1::%s\n", &((*line)[2])); }
+          else if ((*line)[0] == '#' && (*line)[1] == '#' && (*line)[2] == ' ')
+          { printf("LVL2::%s\n", &((*line)[3])); }}
+        close(fd); }
+      else if (NCMP("Makefile", dp->d_name, 8) == 0 && !dp->d_name[8])
+      { openner(coucou, dp->d_name, path);
+        printf("OPENNER::%s\n", path);
+      //  SéCURITé
+        fd = open(path, O_RDONLY);
+        char **line;
+        while (GNL(fd, line))
+        { int i = 0;
+          while ((*line)[i])
+          { if (i && ((*line)[i] == ' ' || !(*line)[i]) && (*line)[i - 1] == ':')
+            { printf("REGLE::%s\n", *line); }
+            else if ((*line)[i] == ' ')
+            { break; }
+            i += 1; }}
+        close(fd); }
+      else if (NCMP(".git", dp->d_name, 4) == 0 && !dp->d_name[4])
+      { openner(coucou, ".git/logs/HEAD", path);
+        printf("OPENNER::%s\n", path);
+      //  SéCURITé
         fd = open(path, O_RDONLY);
         char **line;
         while (GNL(fd, line))
         { printf("LINE::%s\n", *line); }
-      /*  while (GNL(fd, line))
-        { if ((*line)[0] == '#' && (*line)[1] == ' ')
-          {  }
-          else if ((*line)[0] == '#' && (*line)[1] == '#' && (*line)[2] == ' ')
-          {  }}*/
-        close(fd); }
-      else if (NCMP("Makefile", dp->d_name, 8) == 0 && !dp->d_name[8])
-      { openner(coucou, dp->d_name, path);
-       // printf("OPENNER::%s\n", path);
-        fd = open(path, O_RDONLY);
-        close(fd); }}}}
+        GNL(fd, line);
+        printf("FD::%d\n", fd);
+        printf("LINE::%s\n", *line);
+        char **tab = SPL(*line, ' ');
+        int len = 0;
+        while (tab[len])
+        { len += 1; }
+        if (len >= 10)
+        { time_t k = (time_t)atoi(tab[5]);
+          printf("Nom::%s | Prénom::%s | Date::%s\n", tab[2], tab[3], ctime(&k)); }
+        close(fd); } }}}
 
 typedef struct s_cdir
 { char stock[4096];
@@ -86,4 +117,6 @@ int main(void)
   BZE((*tmp).actual, 4096);
   start(lib, &((*tmp).stock));
   chdir("/Users/jpepin/Ausbildung");
+  idle(lib, &tmp); 
+  chdir("/Users/jpepin/goinfre/select");
   idle(lib, &tmp); }
