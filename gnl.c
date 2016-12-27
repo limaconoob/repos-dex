@@ -6,7 +6,7 @@
 /*   By: jpepin <jpepin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/03 05:47:22 by jpepin            #+#    #+#             */
-/*   Updated: 2016/12/27 02:30:31 by jpepin           ###   ########.fr       */
+/*   Updated: 2016/12/27 06:44:25 by jpepin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ static char			*ft_norm3(char **line, char *get)
 	return (ft_concat(get, NULL, i));
 }
 
-int					get_next_line(int fd, char **line)
+int					GNL(int fd, char **line)
 {
 	static char		*get = NULL;
 	int				ret;

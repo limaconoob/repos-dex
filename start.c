@@ -36,6 +36,7 @@ void openner(char *coucou, char *file, char *concat)
 
 void check_dir(t_lbstat *lib, char *coucou)
 { DIR *dir = opendir(coucou);
+  //char *extension[13] = {"env", NULL};
   char path[4096];
   int fd;
   if (dir)
@@ -43,14 +44,26 @@ void check_dir(t_lbstat *lib, char *coucou)
     while ((dp = readdir(dir)))
     { if (NCMP("README.md", dp->d_name, 9) == 0 && !dp->d_name[9])
       { openner(coucou, dp->d_name, path);
-        printf("OPENNER::%s\n", path);
+       // printf("OPENNER::%s\n", path);
         fd = open(path, O_RDONLY);
+        char **line;
+        while (GNL(fd, line))
+        { printf("LINE::%s\n", *line); }
+      /*  while (GNL(fd, line))
+        { if ((*line)[0] == '#' && (*line)[1] == ' ')
+          {  }
+          else if ((*line)[0] == '#' && (*line)[1] == '#' && (*line)[2] == ' ')
+          {  }}*/
         close(fd); }
       else if (NCMP("Makefile", dp->d_name, 8) == 0 && !dp->d_name[8])
       { openner(coucou, dp->d_name, path);
-        printf("OPENNER::%s\n", path);
+       // printf("OPENNER::%s\n", path);
         fd = open(path, O_RDONLY);
         close(fd); }}}}
+
+typedef struct s_cdir
+{ char stock[4096];
+  char actual[4096]; } t_cdir;
 
 void start(t_lbstat *lib, void *cur_dir)
 { (void)lib;
@@ -60,18 +73,17 @@ void start(t_lbstat *lib, void *cur_dir)
   NCPY((char *)cur_dir, the, 4096); }
 
 void idle(t_lbstat *lib, void *cur_dir)
-{ char (*tmp1)[4096] = (char (*)[4096])(cur_dir);
-  char (*tmp2)[4096] = (char (*)[4096])((unsigned long)cur_dir + 4096);
-  start(lib, tmp2);
-  if (NCMP(*tmp1, *tmp2, 4096))
-  { start(lib, tmp1);
-    check_dir(lib, *tmp1); }}
+{ t_cdir *tmp = (t_cdir *)cur_dir;
+  start(lib, &((*tmp).actual));
+  if (NCMP((*tmp).stock, (*tmp).actual, 4096))
+  { start(lib, &((*tmp).stock));
+    check_dir(lib, (*tmp).actual); }}
 
 int main(void)
 { t_lbstat *lib;
-  char tmp[2][4096];
-  BZE(tmp[0], 4096);
-  BZE(tmp[1], 4096);
-  start(lib, &(tmp[0]));
+  t_cdir tmp[1];
+  BZE((*tmp).stock, 4096);
+  BZE((*tmp).actual, 4096);
+  start(lib, &((*tmp).stock));
   chdir("/Users/jpepin/Ausbildung");
   idle(lib, &tmp); }
