@@ -65,12 +65,10 @@ void check_dir(t_lbstat *lib, char *coucou)
           if (!NCMP(&((*line)[i]), "NAME = ", 7) && LEN(&((*line)[i])) > 7)
           { printf("NAME::%s\n", &((*line)[i + 7])); }
           while ((*line)[i])
-          { if (i && ((*line)[i] == ' ' || !(*line)[i]) && (*line)[i - 1] == ':')
+           { if (i && (((*line)[i] == ' ' && (*line)[i - 1] == ':') || (!(*line)[i + 1] && (*line)[i++] == ':')))
             { char *regle = SUB(*line, 0, i - 1);
-              if (NCMP(regle, ".PHONY", 6))
+              if (*regle != '.')
               { printf("REGLE::%s\n", regle); }
-              else
-              { printf("PROTECTION\n"); }
               free(regle); }
             else if ((*line)[i] == ' ')
             { break; }
@@ -80,14 +78,20 @@ void check_dir(t_lbstat *lib, char *coucou)
       else if (NCMP(".git", dp->d_name, 4) == 0 && !dp->d_name[4])
       { openner(coucou, ".git/logs/HEAD", path);
       //  SéCURITé
+        char *tmp;
+        tmp = NULL;
         fd = open(path, O_RDONLY);
-        GNL(fd, line);
+        while (GNL(fd, line))
+        { if (tmp)
+          { DEL((void**)&tmp); }
+          tmp = DUP(*line);
+          DEL((void**)line); }
+        *line = tmp;
         char **tab = SPL(*line, ' ');
         int len = 0;
         while (tab[len])
         { len += 1; }
-        printf("LEN::%d\n", len);
-        if (len >= 9)
+        if (len >= 8)
         { time_t k = (time_t)atoi(tab[5]);
           printf("Nom::%s | Prénom::%s | Date::%s\n", tab[2], tab[3], ctime(&k)); }
         DEL((void**)line);

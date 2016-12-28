@@ -11,6 +11,17 @@ int LEN(char *str)
   { i += 1; }
   return (i); }
 
+char *DUP(char *str)
+{ int i = 0;
+  char *ret;
+  if (!((ret = (char*)malloc(LEN(str) + 1))))
+  { return ((void*)0); }
+  while (*(str + i))
+  { ret[i] = *(str + i);
+    i += 1; }
+  ret[i] = 0;
+  return (ret); }
+
 char *SUB(char *str, int start, int len)
 { char *ret;
   int i = 0;

@@ -8,4 +8,5 @@
   void NCPY(void *ptr1, void *ptr2, int size);
   char **SPL(char *str, char c);
   void DEL(void **data);
+  char *DUP(char *str);
 #endif
