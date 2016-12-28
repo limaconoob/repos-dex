@@ -1,6 +1,10 @@
 
 #include <stdlib.h>
 
+void DEL(void** data)
+{ free(*data);
+  *data = NULL; }
+
 int LEN(char *str)
 { int i = 0;
   while (*(str + i))

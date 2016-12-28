@@ -7,4 +7,5 @@
   char *SUB(char *str, int start, int len);
   void NCPY(void *ptr1, void *ptr2, int size);
   char **SPL(char *str, char c);
+  void DEL(void **data);
 #endif
