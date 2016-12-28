@@ -72,7 +72,7 @@ void check_dir(t_lbstat *lib, char *coucou)
             { break; }
             i += 1; }}
         close(fd); }
-      else if (NCMP(".git", dp->d_name, 4) == 0 && !dp->d_name[4])
+     /* else if (NCMP(".git", dp->d_name, 4) == 0 && !dp->d_name[4])
       { openner(coucou, ".git/logs/HEAD", path);
         printf("OPENNER::%s\n", path);
       //  SéCURITé
@@ -90,18 +90,11 @@ void check_dir(t_lbstat *lib, char *coucou)
         if (len >= 10)
         { time_t k = (time_t)atoi(tab[5]);
           printf("Nom::%s | Prénom::%s | Date::%s\n", tab[2], tab[3], ctime(&k)); }
-        close(fd); } }}}
+        close(fd); }*/ }}}
 
 typedef struct s_cdir
 { char stock[4096];
   char actual[4096]; } t_cdir;
-
-void start(t_lbstat *lib, void *cur_dir)
-{ (void)lib;
-  char the[4096];
-  BZE(the, 4096);
-  getcwd(the, 4096);
-  NCPY((char *)cur_dir, the, 4096); }
 
 void idle(t_lbstat *lib, void *cur_dir)
 { t_cdir *tmp = (t_cdir *)cur_dir;
@@ -110,13 +103,22 @@ void idle(t_lbstat *lib, void *cur_dir)
   { start(lib, &((*tmp).stock));
     check_dir(lib, (*tmp).actual); }}
 
-int main(void)
-{ t_lbstat *lib;
+void start(t_lbstat *lib, void *cur_dir)
+{ (void)lib;
+  unsigned long *bonjour = (unsigned long *)cur_dir;
   t_cdir tmp[1];
   BZE((*tmp).stock, 4096);
   BZE((*tmp).actual, 4096);
-  start(lib, &((*tmp).stock));
-  chdir("/Users/jpepin/Ausbildung");
-  idle(lib, &tmp); 
-  chdir("/Users/jpepin/goinfre/select");
-  idle(lib, &tmp); }
+  getcwd((*tmp).stock, 4096);
+  *bonjour = &tmp; }
+
+printf("2 DATA::%lu, SIZE::%lu\n", (unsigned long)cur_dir, sizeof(cur_dir));
+printf("BONJOUR::%lu, SIZE::%lu\n", (unsigned long)bonjour, sizeof(bonjour));
+
+int main(void)
+{ t_lbstat *lib;
+  unsigned long data;
+  data = 0;
+  start(lib, &data); }
+
+printf("GG::%s\n", ((t_cdir*)data)->stock);
