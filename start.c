@@ -91,7 +91,17 @@ void check_dir(t_lbstat *lib, char *coucou)
         { time_t k = (time_t)atoi(tab[5]);
           printf("Nom::%s | Prénom::%s | Date::%s\n", tab[2], tab[3], ctime(&k)); }
         DEL((void**)line);
-        close(fd); }}}}
+        close(fd);
+        openner(coucou, ".git/refs/heads", path);
+      //  SéCURITé
+        DIR *git = opendir(path);
+        if (git)
+        { struct dirent *db;
+          while ((db = readdir(git)))
+          { if (*(db->d_name) != '.')
+            { printf("BRANCH::%s\n", db->d_name); }}
+          (void)closedir(git); }}}
+    (void)closedir(dir); }}
 
 typedef struct s_cdir
 { char stock[4096];
@@ -134,6 +144,9 @@ int main(void)
   idle(lib, (void**)&data);
   printf("\n");
   chdir("/Users/jpepin/goinfre/work42/ls");
+  idle(lib, (void**)&data);
+  printf("\n");
+  chdir("/Users/jpepin/goinfre/toolbox");
   idle(lib, (void**)&data);
 }
 
