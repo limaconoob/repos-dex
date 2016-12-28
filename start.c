@@ -16,7 +16,6 @@
 //            - Git: status, branches, nom du répo, nom du propriétaire
 //            - Readme: Affiche les noms des chapitres `#`
 //            - Makefile: Affiche les règles du Makefile et $NAME
-//          + Donne le pourcentage des extensions (par langage)
 
 void openner(char *coucou, char *file, char *concat)
 { int i = 0;
@@ -39,6 +38,7 @@ void check_dir(t_lbstat *lib, char *coucou)
 { DIR *dir = opendir(coucou);
   char path[4096];
   char **line;
+  int index = 0;
   int fd;
   if (dir)
   { struct dirent *dp;
@@ -47,6 +47,7 @@ void check_dir(t_lbstat *lib, char *coucou)
       { openner(coucou, dp->d_name, path);
       //  SéCURITé
         fd = open(path, O_RDONLY);
+       // message
         while (GNL(fd, line))
         { if ((*line)[0] == '#' && (*line)[1] == ' ')
           { printf("LVL1::%s\n", &((*line)[2])); }
@@ -109,7 +110,8 @@ void check_dir(t_lbstat *lib, char *coucou)
 
 typedef struct s_cdir
 { char stock[4096];
-  char actual[4096]; } t_cdir;
+  char actual[4096];
+  time_t current; } t_cdir;
 
 void icwd(void *dir)
 { char tmp[4096];
@@ -122,6 +124,8 @@ void start(t_lbstat *lib, void **data)
 { (void)lib;
   static t_cdir tmp[1];
   icwd(&((*tmp).stock));
+  icwd(&((*tmp).actual));
+  (*tmp).current = 0;
   *data = &tmp; }
 
 void idle(t_lbstat *lib, void **data)
