@@ -7,7 +7,8 @@
 #define SPEC_MAX_Y 5
 #define SPEC_MAX_XY SPEC_MAX_X *SPEC_MAX_Y
 #define SPEC_MAX_PRE_XY SPEC_MAX_XY - 1
-#define SPEC_CHARACTER_MAX 1024
+#define SPEC_INFO_BULLE 16
+#define SPEC_CHARACTER_MAX SPEC_MAX_Y * SPEC_INFO_BULLE
 
 /// Character Color Attributes
 #define BLACK [ 0, 0, 0 ]
@@ -107,7 +108,8 @@ typedef struct s_tuple {
 } t_tuple;
 
 /// Display screen's Characters
-typedef struct s_character { /// Style Attributes
+typedef struct s_character {
+  /// Style Attributes
   unsigned char attribute;
   /// Text Color
   unsigned char foreground[3];
