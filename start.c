@@ -263,7 +263,7 @@ void start(t_lbstat *lib, void **data)
 
 char not_empty(void *message_bullets, int len)
 { while (len)
-  { if ((*((char **)message_bullets))[len])
+  { if (((char *)message_bullets)[len])
     { return (1); }
     len -= 1; }
   return ((*((char **)message_bullets))[len] ? 1 : 0); }
@@ -274,6 +274,7 @@ void idle(t_lbstat *lib, void **data)
   icwd(&((*tmp).actual));
   if (NCMP((*tmp).stock, (*tmp).actual, 4096))
   { icwd(&((*tmp).stock));
+    (*tmp).collider = 0;
     check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
 
     int i = 0;
@@ -285,30 +286,42 @@ void idle(t_lbstat *lib, void **data)
       if ((i + 1) % 16 == 0)
       { printf("\n"); }
       i += 1; }
-    printf("\n");
-  }
-  else if ((*tmp).current >= time(NULL) - 5 && not_empty(&((*tmp).message_bullets), 1024))
+    printf("\n"); }
+  else if ((*tmp).current == time(NULL) - 1 && not_empty((*tmp).message_bullets, 1024))
   { (*tmp).current = time(NULL);
     if ((*tmp).collider + SPEC_CHARACTER_MAX < 1024 && ((*tmp).message_bullets)[(*tmp).collider + SPEC_CHARACTER_MAX] != '\x07')
     { NCHT((*lib).message, &(((*tmp).message_bullets)[(*tmp).collider]), SPEC_CHARACTER_MAX);
       (*tmp).collider += 16; }
     else
-    { (*tmp).collider = 0; }}}
+    { (*tmp).collider = 0; }
+    printf("\n--------------------------\n");
+    int f = 0;
+    while (f < SPEC_CHARACTER_MAX)
+    { printf("%c", (char)((*lib).message)[f].glyph);
+      if ((f + 1) % 16 == 0)
+      { printf("\n"); }
+      f += 1; }}}
 
 int main(void)
-{ t_lbstat *lib;
+{ t_lbstat lib[1];
   unsigned long data;
   data = 0;
   start(lib, (void**)&data);
-  chdir("/Users/jpepin/Ausbildung");
-  idle(lib, (void**)&data);
-  printf("\n");
-  chdir("/Users/jpepin/goinfre/work42/ls");
-  idle(lib, (void**)&data);
-  printf("\n");
-  chdir("/Users/jpepin/goinfre/nTerm");
-  idle(lib, (void**)&data);
-  printf("\n");
-  chdir("/Users/jpepin/goinfre/top");
-  idle(lib, (void**)&data);
-}
+  char car = 'h';
+  time_t the = time(NULL);
+  while (42)
+  { if (car == 'h')
+    { chdir("/Users/jpepin/goinfre/work42/ls"); }
+    else if (car == 'j')
+    { chdir("/Users/jpepin/goinfre/nTerm"); }
+    else if (car == 'k')
+    { chdir("/Users/jpepin/goinfre/top"); }
+    else if (car == 'q')
+    { break; }
+    if (the == time(NULL) - 8)
+    { car = 'j'; }
+    else if (the == time(NULL) - 26)
+    { car = 'k'; }
+    else if (the == time(NULL) - 60)
+    { car = 'q'; }
+    idle(lib, (void**)&data); }}
