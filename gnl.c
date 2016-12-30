@@ -6,7 +6,7 @@
 /*   By: jpepin <jpepin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/03 05:47:22 by jpepin            #+#    #+#             */
-/*   Updated: 2016/12/28 04:16:54 by jpepin           ###   ########.fr       */
+/*   Updated: 2016/12/30 10:41:12 by jpepin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,14 +100,6 @@ int					GNL(int fd, char **line)
 		return (1);
 	while ((ret = read(fd, buf, BUFF_SIZE)) > 0)
 	{
-/*    int g = 0;
-    printf("BUFFER::");
-    while (g < ret)
-    { printf(" %d %c |", buf[g], buf[g]);
-      g += 1; }
-    printf("\n");*/
- //   printf("BUFFER::%s\n", buf);
-
 		i = ft_norm2(line, buf, ret);
 		if (i + 1 < ret && (get = ft_concat(get, &buf[i] + 1, ret - i - 1)))
 			return (1);
