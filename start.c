@@ -55,8 +55,22 @@ void push_text(char *message_bullets, char *texte, int *mes)
   while (i < len)
   { message_bullets[*mes + i] = texte[i];
     i += 1; }
+  while (i % 16 != 0)
+  { i += 1; }
+  *mes += i; }
 
-}
+void push_front(char *message_bullets, char *texte, int *mes)
+{ int len = LEN(texte);
+  int i = 0;
+  if (*mes + len >= 1024)
+  { len = 1024 - *mes; }
+  while (i < len)
+  { message_bullets[*mes + i] = texte[i];
+    i += 1; }
+  *mes += i; }
+
+void adjust(int *mes)
+{ *mes += 16 - (*mes % 16); }
 
 void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
 { DIR *dir = opendir(coucou);
@@ -68,58 +82,59 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
   int fd;
   int name = 0;
   BZE(message_bullets, 1024);
+  push_line((char *)message_bullets, "Vous etes dans", 14, &mes);
+  push_line((char *)message_bullets, "le dossier:", 11, &mes);
+  push_text((char *)message_bullets, coucou, &mes);
+  push_blank(&mes);
   if (dir)
   { struct dirent *dp;
     while ((dp = readdir(dir)))
     { if (NCMP("README.md", dp->d_name, 9) == 0 && !dp->d_name[9])
       { openner(coucou, dp->d_name, path);
-      //  printf("OPENNER::%s\n", path);
       //  SéCURITé
         fd = open(path, O_RDONLY);
+        push_line((char *)message_bullets, "J'ai trouve' un", 15, &mes);
+        push_line((char *)message_bullets, "readme.md:", 10, &mes);
         while (GNL(fd, line))
         { if ((*line)[0] == '#' && (*line)[1] == ' ')
-          { printf("LVL1::%s\n", &((*line)[2])); }
+          { push_text((char *)message_bullets, *line, &mes); }
           else if ((*line)[0] == '#' && (*line)[1] == '#' && (*line)[2] == ' ')
-          { printf("LVL2::%s\n", &((*line)[3])); }
+          { push_front((char *)message_bullets, "- ", &mes);
+            push_text((char *)message_bullets, &((*line)[3]), &mes); }
           DEL((void**)line); }
         close(fd); }
 
       else if (NCMP("Makefile", dp->d_name, 8) == 0 && !dp->d_name[8])
       { openner(coucou, dp->d_name, path);
-      //  printf("OPENNER::%s\n", path);
       //  SéCURITé
         fd = open(path, O_RDONLY);
-        printf("Règles Makefile:\n");
         while (GNL(fd, line))
         { int i = 0;
           while ((*line)[i] && (*line)[i] == ' ')
           { i += 1; }
           if (!NCMP(&((*line)[i]), "NAME = ", 7) && LEN(&((*line)[i])) > 7)
-          { printf("NAME::%s\n", &((*line)[i + 7])); }
+          { push_line((char *)message_bullets, "Nom du projet:", 14, &mes);
+            push_line((char *)message_bullets, &((*line)[i + 7]), LEN(&((*line)[i + 7])), &mes);
+            push_blank(&mes);
+            push_line((char *)message_bullets, "Voici les regles", 16, &mes);
+            push_line((char *)message_bullets, "du Makefile:", 12, &mes); }
           while ((*line)[i])
            { if (i && (((*line)[i] == ' ' && (*line)[i - 1] == ':') || (!(*line)[i + 1] && (*line)[i++] == ':')))
             { char *regle = SUB(*line, 0, i - 1);
               if (*regle != '.')
-              { printf("REGLE::%s\n", regle); }
+              { push_line((char *)message_bullets, regle, LEN(regle), &mes); }
               free(regle); }
             else if ((*line)[i] == ' ')
             { break; }
             i += 1; }
           DEL((void**)line); }
+          push_blank(&mes);
         close(fd); }
 
       else if (NCMP("Cargo.toml", dp->d_name, 10) == 0 && !dp->d_name[10])
       { openner(coucou, dp->d_name, path);
-      //  printf("OPENNER::%s\n", path);
       //  SéCURITé
         fd = open(path, O_RDONLY);
-        push_line((char *)message_bullets, "Je remarque que", 15, &mes);
-        push_line((char *)message_bullets, "ce projet", 9, &mes);
-        push_line((char *)message_bullets, "utilise cargo:", 14, &mes);
-        push_line((char *)message_bullets, "- cargo run", 11, &mes);
-        push_line((char *)message_bullets, "- cargo test", 12, &mes);
-        push_line((char *)message_bullets, "- cargo --help", 14, &mes);
-        push_blank(&mes);
         char auteur = 0;
         while (GNL(fd, line))
         { int i = 0;
@@ -138,24 +153,32 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
             int q = 0;
             while ((*line)[i + q] && (*line)[i + q + 1] != '<')
             { q += 1; }
-            push_line((char *)message_bullets, &((*line)[i]), q, &mes);
-            push_blank(&mes); }
+            push_line((char *)message_bullets, &((*line)[i]), q, &mes); }
           else if (auteur)
-          { mes += 16;
-            auteur = 0; }
+          { auteur = 0; }
           else if (!NCMP(&((*line)[i]), "authors = [", 11))
           { push_line((char *)message_bullets, "Ce projet a ete", 15, &mes);
-            push_line((char *)message_bullets, "cree par:", 9, &mes);
+            push_line((char *)message_bullets, "realise par:", 12, &mes);
             auteur = 1; }
           DEL((void**)line); }
+        push_blank(&mes);
+        push_line((char *)message_bullets, "Je remarque que", 15, &mes);
+        push_line((char *)message_bullets, "ce projet", 9, &mes);
+        push_line((char *)message_bullets, "utilise cargo:", 14, &mes);
+        push_line((char *)message_bullets, "> cargo run", 11, &mes);
+        push_line((char *)message_bullets, "> cargo test", 12, &mes);
+        push_line((char *)message_bullets, "> cargo --help", 14, &mes);
+        push_blank(&mes);
         close(fd); }
       else if (NCMP(".git", dp->d_name, 4) == 0 && !dp->d_name[4])
       { openner(coucou, ".git/logs/HEAD", path);
-        printf("OPENNER::%s\n", path);
       //  SéCURITé
         char *tmp;
         tmp = NULL;
         fd = open(path, O_RDONLY);
+        push_line((char *)message_bullets, "Ce projet a", 11, &mes);
+        push_line((char *)message_bullets, "un repo git!", 12, &mes);
+        push_blank(&mes);
         while (GNL(fd, line))
         { if (tmp)
           { DEL((void**)&tmp); }
@@ -163,16 +186,23 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
           DEL((void**)line); }
         *line = tmp;
         char **tab = SPL(*line, ' ');
-        int len = 0;
-        while (tab[len])
-        { len += 1; }
-        if (len >= 8)
-        { time_t k = (time_t)atoi(tab[5]);
-          push_line((char *)message_bullets, "Ce projet", 9, &mes);
-          push_line((char *)message_bullets, "utilise git:", 12, &mes);
-          while ()
-          { f }
-          printf("Nom::%s | Prénom::%s | Date::%s\n", tab[2], tab[3], ctime(&k)); }
+        int commit = 0;
+        while (tab[commit] && *(tab[commit]) != '+')
+        { commit += 1; }
+        if (tab[commit] && !(NCMP(tab[commit], "+0100\tcommit:", 13)))
+        { push_line((char *)message_bullets, "Dernier commit:", 15, &mes);
+          commit += 1;
+          while (tab[commit])
+          { push_front((char *)message_bullets, tab[commit], &mes);
+            push_front((char *)message_bullets, " ", &mes);
+            commit += 1; }
+          adjust(&mes);
+          push_line((char *)message_bullets, "push par:", 9, &mes);
+          push_line((char *)message_bullets, tab[2], LEN(tab[2]), &mes);
+          push_line((char *)message_bullets, "depuis le:", 10, &mes);
+          time_t k = (time_t)atoi(tab[5]);
+          push_line((char *)message_bullets, ctime(&k), 10, &mes);
+          push_blank(&mes); }
         DEL((void**)line);
         close(fd);
         openner(coucou, ".git/refs/heads", path);
@@ -180,9 +210,12 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
         DIR *git = opendir(path);
         if (git)
         { struct dirent *db;
+          push_line((char *)message_bullets, "Voici toutes les", 16, &mes);
+          push_line((char *)message_bullets, "branch locales:", 15, &mes);
           while ((db = readdir(git)))
           { if (*(db->d_name) != '.')
-            { printf("BRANCH::%s\n", db->d_name); }}
+            { push_line((char *)message_bullets, db->d_name, LEN(db->d_name), &mes); }}
+          push_blank(&mes);
           (void)closedir(git); }}}
     (void)closedir(dir); }}
 
@@ -225,10 +258,9 @@ void idle(t_lbstat *lib, void **data)
       { printf("\n"); }
       i += 1; }
     printf("\n");
-}}
-
-//printf("2 DATA::%lu, SIZE::%lu\n", (unsigned long)cur_dir, sizeof(cur_dir));
-//printf("BONJOUR::%lu, SIZE::%lu\n", (unsigned long)bonjour, sizeof(bonjour));
+  }
+/*  else if ((*tmp).current)
+  {}*/ }
 
 int main(void)
 { t_lbstat *lib;
@@ -247,5 +279,3 @@ int main(void)
   chdir("/Users/jpepin/goinfre/top");
   idle(lib, (void**)&data);
 }
-
-//printf("GG::%s\n", ((t_cdir*)data)->stock);
