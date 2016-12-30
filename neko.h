@@ -126,4 +126,7 @@ typedef struct s_library_state {
   t_character message[SPEC_CHARACTER_MAX];
   unsigned char unmount;
 } t_lbstat;
+
+void start(t_lbstat *lib, void **data);
+
 #endif
