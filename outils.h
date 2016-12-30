@@ -9,4 +9,5 @@
   char **SPL(char *str, char c);
   void DEL(void **data);
   char *DUP(char *str);
+  void NCHT(t_character *car, void *ptr2, int size);
 #endif

@@ -1,4 +1,5 @@
 
+#include "neko.h"
 #include <stdlib.h>
 
 void DEL(void** data)
@@ -37,6 +38,12 @@ void NCPY(void *ptr1, void *ptr2, int size)
 { while (size)
   { ((unsigned char *)ptr1)[size - 1] = ((unsigned char *)ptr2)[size - 1];
     size -= 1; }}
+
+void NCHT(t_character *car, void *ptr2, int size)
+{ int i = 0;
+  while (i < size)
+  { car[i].glyph = ((unsigned char *)ptr2)[size - 1];
+    i += 1; }}
 
 void BZE(void *ptr, int size)
 { while (size)
