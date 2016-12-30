@@ -222,18 +222,7 @@ void idle(t_lbstat *lib, void **data)
   if (NCMP((*tmp).stock, (*tmp).actual, 4096))
   { icwd(&((*tmp).stock));
     (*tmp).collider = 0;
-    check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
-
-    int i = 0;
-    printf("BULLET::\n");
-    while (i < 1024)
-    { printf("%c", ((char *)((*tmp).message_bullets))[i]);
-      if (!((char *)((*tmp).message_bullets))[i])
-      { printf("."); }
-      if ((i + 1) % 16 == 0)
-      { printf("\n"); }
-      i += 1; }
-    printf("\n"); }
+    check_dir(lib, (*tmp).actual, &((*tmp).message_bullets)); }
 
   else if ((*tmp).current == time(NULL) - 1 && not_empty((*tmp).message_bullets, 1024))
   { (*tmp).current = time(NULL);
@@ -241,35 +230,4 @@ void idle(t_lbstat *lib, void **data)
     { NCHT((*lib).message, &(((*tmp).message_bullets)[(*tmp).collider]), SPEC_CHARACTER_MAX);
       (*tmp).collider += 16; }
     else
-    { (*tmp).collider = 0; }
-    printf("\n--------------------------\n");
-    int f = 0;
-    while (f < SPEC_CHARACTER_MAX)
-    { printf("%c", (char)((*lib).message)[f].glyph);
-      if ((f + 1) % 16 == 0)
-      { printf("\n"); }
-      f += 1; }}}
-
-int main(void)
-{ t_lbstat lib[1];
-  unsigned long data;
-  data = 0;
-  start(lib, (void**)&data);
-  char car = 'h';
-  time_t the = time(NULL);
-  while (42)
-  { if (car == 'h')
-    { chdir("/Users/jpepin/goinfre/work42/ls"); }
-    else if (car == 'j')
-    { chdir("/Users/jpepin/goinfre/nTerm"); }
-    else if (car == 'k')
-    { chdir("/Users/jpepin/goinfre/top"); }
-    else if (car == 'q')
-    { break; }
-    if (the == time(NULL) - 8)
-    { car = 'j'; }
-    else if (the == time(NULL) - 26)
-    { car = 'k'; }
-    else if (the == time(NULL) - 60)
-    { car = 'q'; }
-    idle(lib, (void**)&data); }}
+    { (*tmp).collider = 0; }}}
