@@ -1,0 +1,30 @@
+
+#include "neko.h"
+#include "texte.h"
+#include "dex.h"
+#include "outils.h"
+#include <unistd.h>
+
+int main(void)
+{ t_lbstat lib[1];
+  unsigned long data;
+  data = 0;
+  start(lib, (void**)&data);
+  char car = 'h';
+  time_t the = time(NULL);
+  while (42)
+  { if (car == 'h')
+    { chdir("/Users/jpepin/goinfre/work42/ls"); }
+    else if (car == 'j')
+    { chdir("/Users/jpepin/goinfre/nTerm"); }
+    else if (car == 'k')
+    { chdir("/Users/jpepin/goinfre/top"); }
+    else if (car == 'q')
+    { break; }
+    if (the == time(NULL) - 8)
+    { car = 'j'; }
+    else if (the == time(NULL) - 26)
+    { car = 'k'; }
+    else if (the == time(NULL) - 60)
+    { car = 'q'; }
+    idle(lib, (void**)&data); }}

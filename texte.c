@@ -43,3 +43,12 @@ void push_front(char *message_bullets, char *texte, int *mes)
 // Restore le padding
 void adjust(int *mes)
 { *mes += 16 - (*mes % 16); }
+
+// Actualise l'info-bulle avec un nouveau message
+void neko_say(char *bulle, char *message)
+{ BZE(bulle, SPEC_CHARACTER_MAX);
+  if (message)
+  { int i = 0;
+    while (i < SPEC_CHARACTER_MAX && message[i])
+    { bulle[i] = message[i]
+      i += 1; }}}
