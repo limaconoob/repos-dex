@@ -163,7 +163,7 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
           { push_front((char *)message_bullets, tab[commit], &mes);
             push_front((char *)message_bullets, " ", &mes);
             commit += 1; }
-          adjust(&mes);
+          adjust((char *)message_bullets, &mes);
           push_line((char *)message_bullets, "push par:", 9, &mes);
           push_line((char *)message_bullets, tab[2], LEN(tab[2]), &mes);
         push_line((char *)message_bullets, "depuis le:", 10, &mes);
@@ -225,4 +225,4 @@ void idle(t_lbstat *lib, void **data)
     check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
     (*lib).neko.position.cardinal = UpperRight;
     (*lib).infobulle.cardinal = Left;
-    NCPY((*lib).infobulle.message, (*tmp).message_bullets, 1024); }}
+    neko_say((*lib).infobulle.message, (*tmp).message_bullets); }}
