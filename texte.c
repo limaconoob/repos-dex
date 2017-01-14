@@ -50,5 +50,5 @@ void neko_say(char *bulle, char *message)
   if (message)
   { int i = 0;
     while (i < SPEC_CHARACTER_MAX && message[i])
-    { bulle[i] = message[i]
+    { bulle[i] = message[i];
       i += 1; }}}

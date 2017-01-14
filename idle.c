@@ -222,12 +222,7 @@ void idle(t_lbstat *lib, void **data)
   if (NCMP((*tmp).stock, (*tmp).actual, 4096))
   { icwd(&((*tmp).stock));
     (*tmp).collider = 0;
-    check_dir(lib, (*tmp).actual, &((*tmp).message_bullets)); }
-
-  else if ((*tmp).current == time(NULL) - 1 && not_empty((*tmp).message_bullets, 1024))
-  { (*tmp).current = time(NULL);
-    if ((*tmp).collider + SPEC_CHARACTER_MAX < 1024 && ((*tmp).message_bullets)[(*tmp).collider + SPEC_CHARACTER_MAX] != '\x07')
-    { NCHT((*lib).message, &(((*tmp).message_bullets)[(*tmp).collider]), SPEC_CHARACTER_MAX);
-      (*tmp).collider += 16; }
-    else
-    { (*tmp).collider = 0; }}}
+    check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
+    (*lib).neko.position.cardinal = UpperRight;
+    (*lib).infobulle.cardinal = Left;
+    NCPY((*lib).infobulle.message, (*tmp).message_bullets, 1024); }}
