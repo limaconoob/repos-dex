@@ -46,7 +46,7 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
 { DIR *dir = opendir(coucou);
   char path[4096];
   int mes = 0;
-  char **line;
+  char *line[1];
   int len = 0;
   int index = 0;
   int fd;
@@ -55,9 +55,8 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
   char flags[4];
   BZE(flags, 4);
   BZE(message_bullets, 1024);
-  push_line((char *)message_bullets, "Vous etes dans", 14, &mes);
-  push_line((char *)message_bullets, "le dossier:", 11, &mes);
-  push_text((char *)message_bullets, coucou, &mes);
+  push_line((char *)message_bullets, "Vous etes dans le dossier:", &mes);
+  push_line((char *)message_bullets, coucou, &mes);
   push_blank((char *)message_bullets, &mes);
   if (dir)
   { struct dirent *dp;
@@ -82,12 +81,12 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
           while ((*line)[i] && ((*line)[i] == ' ' || (*line)[i] == '\t'))
           { i += 1; }
           if (!name && !NCMP(&((*line)[i]), "name = \"", 8) && LEN(&((*line)[i])) > 8)
-          { push_line((char *)message_bullets, "Nom du projet:", 14, &mes);
-            push_line((char *)message_bullets, &((*line)[i + 8]), LEN(&((*line)[i + 8])) - 1, &mes);
+          { push_front((char *)message_bullets, "Le nom de ce projet est ", &mes);
+            push_sized((char *)message_bullets, &((*line)[i + 8]), LEN(&((*line)[i + 8])) - 1, &mes);
             name = 1; }
           else if (!NCMP(&((*line)[i]), "version = \"", 11) && LEN(&((*line)[i])) > 11 && !version)
-          { push_line((char *)message_bullets, "Version:", 8, &mes);
-            push_line((char *)message_bullets, &((*line)[i + 11]), LEN(&((*line)[i + 11])) - 1, &mes);
+          { push_front((char *)message_bullets, "et il en est a la version ", &mes);
+            push_sized((char *)message_bullets, &((*line)[i + 11]), LEN(&((*line)[i + 11])) - 1, &mes);
             push_blank((char *)message_bullets, &mes);
             version = 1; }
           else if (auteur && **line != ']' && **line != '[')
@@ -95,21 +94,25 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
             int q = 0;
             while ((*line)[i + q] && (*line)[i + q + 1] != '<')
             { q += 1; }
-            push_line((char *)message_bullets, &((*line)[i]), q, &mes); }
+            if (auteur > 1)
+            { push_front((char *)message_bullets, " & ", &mes);
+              push_part((char *)message_bullets, &((*line)[i]), q, &mes); }
+            else
+            { push_part((char *)message_bullets, &((*line)[i]), q, &mes); }
+            auteur += 1; }
           else if (auteur)
-          { auteur = 0; }
+          { push_blank((char *)message_bullets, &mes);
+            auteur = 0; }
           else if (!NCMP(&((*line)[i]), "authors = [", 11))
-          { push_line((char *)message_bullets, "Ce projet a ete", 15, &mes);
-            push_line((char *)message_bullets, "realise par:", 12, &mes);
+          { push_front((char *)message_bullets, "Ce projet a ete realise par ", &mes);
             auteur = 1; }
           DEL((void**)line); }
         push_blank((char *)message_bullets, &mes);
-        push_line((char *)message_bullets, "Je remarque que", 15, &mes);
-        push_line((char *)message_bullets, "ce projet", 9, &mes);
-        push_line((char *)message_bullets, "utilise cargo:", 14, &mes);
-        push_line((char *)message_bullets, "> cargo run", 11, &mes);
-        push_line((char *)message_bullets, "> cargo test", 12, &mes);
-        push_line((char *)message_bullets, "> cargo --help", 14, &mes);
+        push_line((char *)message_bullets, "Je remarque que ce projet utilise cargo.", &mes);
+        push_line((char *)message_bullets, "Si vous ne l'avez pas, essayez ca:", &mes);
+        push_line((char *)message_bullets, "$> curl https://sh.rustup.rs -sSf | sh", &mes);
+        push_line((char *)message_bullets, "$> rustup default nightly", &mes);
+        push_line((char *)message_bullets, "$> cargo run", &mes);
         push_blank((char *)message_bullets, &mes);
         close(fd); }}
 
@@ -122,16 +125,15 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
           while ((*line)[i] && (*line)[i] == ' ')
           { i += 1; }
           if (!NCMP(&((*line)[i]), "NAME = ", 7) && LEN(&((*line)[i])) > 7)
-          { push_line((char *)message_bullets, "Nom du projet:", 14, &mes);
-            push_line((char *)message_bullets, &((*line)[i + 7]), LEN(&((*line)[i + 7])), &mes);
+          { push_front((char *)message_bullets, "Le nom de ce projet est ", &mes);
+            push_sized((char *)message_bullets, &((*line)[i + 7]), LEN(&((*line)[i + 7])), &mes);
             push_blank((char *)message_bullets, &mes);
-            push_line((char *)message_bullets, "Voici les regles", 16, &mes);
-            push_line((char *)message_bullets, "du Makefile:", 12, &mes); }
+            push_line((char *)message_bullets, "Voici les regles de son Makefile:", &mes); }
           while ((*line)[i])
            { if (i && (((*line)[i] == ' ' && (*line)[i - 1] == ':') || (!(*line)[i + 1] && (*line)[i++] == ':')))
             { char *regle = SUB(*line, 0, i - 1);
               if (*regle != '.')
-              { push_line((char *)message_bullets, regle, LEN(regle), &mes); }
+              { push_line((char *)message_bullets, regle, &mes); }
               free(regle); }
             else if ((*line)[i] == ' ')
             { break; }
@@ -146,8 +148,7 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
       { char *tmp;
         tmp = NULL;
         fd = open(path, O_RDONLY);
-        push_line((char *)message_bullets, "Ce projet a", 11, &mes);
-        push_line((char *)message_bullets, "un repo git!", 12, &mes);
+        push_line((char *)message_bullets, "Ce projet a un repo git!", &mes);
         push_blank((char *)message_bullets, &mes);
         while (GNL(fd, line))
         { if (tmp)
@@ -160,19 +161,18 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
         while (tab[commit] && *(tab[commit]) != '+')
         { commit += 1; }
         if (tab[commit] && !(NCMP(tab[commit], "+0100\tcommit:", 13)))
-        { push_line((char *)message_bullets, "Dernier commit:", 15, &mes);
+        { push_line((char *)message_bullets, "Nom du dernier commit:", &mes);
           commit += 1;
           while (tab[commit])
           { push_front((char *)message_bullets, tab[commit], &mes);
             push_front((char *)message_bullets, " ", &mes);
             commit += 1; }
-          adjust((char *)message_bullets, &mes);
-          push_line((char *)message_bullets, "push par:", 9, &mes);
-          push_line((char *)message_bullets, tab[2], LEN(tab[2]), &mes);
-        push_line((char *)message_bullets, "depuis le:", 10, &mes);
-        time_t k = (time_t)atoi(tab[5]);
-        push_line((char *)message_bullets, ctime(&k), 10, &mes);
-        push_blank((char *)message_bullets, &mes); }
+          push_line((char *)message_bullets, "push par:", &mes);
+          push_line((char *)message_bullets, tab[2], &mes);
+          push_line((char *)message_bullets, "a l'heure:", &mes);
+          time_t k = (time_t)atoi(tab[5]);
+          push_sized((char *)message_bullets, ctime(&k), 10, &mes);
+          push_blank((char *)message_bullets, &mes); }
         DEL((void**)line);
         close(fd);
         openner(coucou, ".git/refs/heads", path);
@@ -180,11 +180,10 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
         { DIR *git = opendir(path);
           if (git)
           { struct dirent *db;
-            push_line((char *)message_bullets, "Voici toutes les", 16, &mes);
-            push_line((char *)message_bullets, "branch locales:", 15, &mes);
+            push_line((char *)message_bullets, "Voici toutes les branches locales:", &mes);
             while ((db = readdir(git)))
             { if (*(db->d_name) != '.')
-              { push_line((char *)message_bullets, db->d_name, LEN(db->d_name), &mes); }}
+              { push_line((char *)message_bullets, db->d_name, &mes); }}
             push_blank((char *)message_bullets, &mes);
             (void)closedir(git); }}}}
 
@@ -192,17 +191,16 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
     { openner(coucou, "README.md", path);
       if (!access(path, R_OK))
       { fd = open(path, O_RDONLY);
-        push_line((char *)message_bullets, "J'ai trouve' un", 15, &mes);
-        push_line((char *)message_bullets, "readme.md:", 10, &mes);
+        push_line((char *)message_bullets, "J'ai aussi trouve un Readme.md!", &mes);
         while (GNL(fd, line))
         { if ((*line)[0] == '#' && (*line)[1] == ' ')
-          { push_text((char *)message_bullets, *line, &mes); }
+          { push_sized((char *)message_bullets, *line, 50, &mes); }
           else if ((*line)[0] == '#' && (*line)[1] == '#' && (*line)[2] == ' ')
           { push_front((char *)message_bullets, "- ", &mes);
-            push_text((char *)message_bullets, &((*line)[3]), &mes); }
+            push_sized((char *)message_bullets, &((*line)[3]), 48, &mes); }
           DEL((void**)line); }
         close(fd); }}}
-  push_line((char *)message_bullets, "\x07", 1, &mes); }
+  push_front((char *)message_bullets, "\x07", &mes); }
 
 void icwd(void *dir)
 { BZE((char *)dir, 4096);
@@ -231,14 +229,7 @@ void idle(t_lbstat *lib, void **data)
   { icwd(&((*tmp).stock));
     (*tmp).collider = 0;
     check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
-    (*lib).neko.position.cardinal = UpperRight;
-    (*lib).infobulle.cardinal = Left;
-printf("BULLETS::\n");
-printf("%s\n", (*tmp).message_bullets);
-    neko_say((*lib).infobulle.message, (*tmp).message_bullets); 
-    int i = 0;
-    while (i < 1024)
-    { if (((*lib).infobulle.message)[i].glyph > 126 || (((*lib).infobulle.message)[i].glyph < 32 && ((*lib).infobulle.message)[i].glyph != 10))
-      { ((*lib).infobulle.message[i]).glyph = 0; }
-      i += 1; }}
+    (*lib).neko.position.cardinal = MiddleLeft;
+    (*lib).infobulle.cardinal = Right;
+    neko_say((*lib).infobulle.message, (*tmp).message_bullets); }
   start = 1; }
