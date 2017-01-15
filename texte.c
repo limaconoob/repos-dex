@@ -3,8 +3,9 @@
 #include "outils.h"
 
 // Insère une ligne vide
-void push_blank(int *mes)
-{ *mes += 16; }
+void push_blank(char *message_bullets, int *mes)
+{ message_bullets[*mes] = '\n';
+  *mes += 16; }
 
 // Insère une ligne de texte formatée
 void push_line(char *message_bullets, char *descriptif, int len, int *mes)
@@ -48,10 +49,10 @@ void adjust(char *message_bullets, int *mes)
   *mes += 17 - (*mes % 17); }
 
 // Actualise l'info-bulle avec un nouveau message
-void neko_say(char *bulle, char *message)
+void neko_say(t_character *bulle, char *message)
 { BZE(bulle, SPEC_CHARACTER_MAX);
   if (message)
   { int i = 0;
     while (i < SPEC_CHARACTER_MAX)
-    { bulle[i] = message[i];
+    { (bulle[i]).glyph = message[i];
       i += 1; }}}
