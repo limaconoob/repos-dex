@@ -103,11 +103,10 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
           else if (auteur)
           { push_blank((char *)message_bullets, &mes);
             auteur = 0; }
-          else if (!NCMP(&((*line)[i]), "authors = [", 11))
+          else if (!NCMP(&((*line)[i]), "author", 6))
           { push_front((char *)message_bullets, "Ce projet a ete realise par ", &mes);
             auteur = 1; }
           DEL((void**)line); }
-        push_blank((char *)message_bullets, &mes);
         push_line((char *)message_bullets, "Je remarque que ce projet utilise cargo.", &mes);
         push_line((char *)message_bullets, "Si vous ne l'avez pas, essayez ca:", &mes);
         push_line((char *)message_bullets, "$> curl https://sh.rustup.rs -sSf | sh", &mes);
@@ -169,7 +168,7 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
             commit += 1; }
           push_line((char *)message_bullets, "push par:", &mes);
           push_line((char *)message_bullets, tab[2], &mes);
-          push_line((char *)message_bullets, "a l'heure:", &mes);
+          push_line((char *)message_bullets, "au jour du:", &mes);
           time_t k = (time_t)atoi(tab[5]);
           push_sized((char *)message_bullets, ctime(&k), 10, &mes);
           push_blank((char *)message_bullets, &mes); }
