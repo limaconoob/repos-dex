@@ -5,6 +5,7 @@
 #include "texte.h"
 #include <dirent.h>
 #include <fcntl.h>
+#include <libproc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -204,11 +205,12 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
   push_line((char *)message_bullets, "\x07", 1, &mes); }
 
 void icwd(void *dir)
-{ char tmp[4096];
-  BZE(tmp, 4096);
-  BZE((char *)dir, 4096);
-  getcwd(tmp, 4096);
-  NCPY((char *)dir, tmp, 4096); }
+{ BZE((char *)dir, 4096);
+  struct proc_vnodepathinfo vpi;
+  pid_t pids[1];
+  proc_listchildpids(getpid(), pids, sizeof(pids));
+  proc_pidinfo(pids[0], PROC_PIDVNODEPATHINFO, 0, &vpi, sizeof(vpi));
+  NCPY((char *)dir, vpi.pvi_cdir.vip_path, LEN(vpi.pvi_cdir.vip_path)); }
 
 char not_empty(void *message_bullets, int len)
 { while (len)
