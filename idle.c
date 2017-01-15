@@ -225,4 +225,4 @@ void idle(t_lbstat *lib, void **data)
     check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
     (*lib).neko.position.cardinal = UpperRight;
     (*lib).infobulle.cardinal = Left;
-    neko_say((*lib).infobulle.message, (*tmp).message_bullets); }}
+    neko_say((char *)(*lib).infobulle.message, (*tmp).message_bullets); }}
