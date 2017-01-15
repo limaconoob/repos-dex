@@ -206,11 +206,14 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
 
 void icwd(void *dir)
 { BZE((char *)dir, 4096);
+  char tmp[MAXPATHLEN];
+  BZE(tmp, MAXPATHLEN);
   struct proc_vnodepathinfo vpi;
   pid_t pids[1];
   proc_listchildpids(getpid(), pids, sizeof(pids));
   proc_pidinfo(pids[0], PROC_PIDVNODEPATHINFO, 0, &vpi, sizeof(vpi));
-  NCPY((char *)dir, vpi.pvi_cdir.vip_path, LEN(vpi.pvi_cdir.vip_path)); }
+  NCPY(tmp, vpi.pvi_cdir.vip_path, MAXPATHLEN);
+  NCPY((char *)dir, tmp, MAXPATHLEN); }
 
 char not_empty(void *message_bullets, int len)
 { while (len)
@@ -221,12 +224,21 @@ char not_empty(void *message_bullets, int len)
 
 void idle(t_lbstat *lib, void **data)
 { (void)lib;
+  static int start = 0;
   t_cdir *tmp = (t_cdir *)(*data);
   icwd(&((*tmp).actual));
-  if (NCMP((*tmp).stock, (*tmp).actual, 4096))
+  if (start && NCMP((*tmp).stock, (*tmp).actual, 4096))
   { icwd(&((*tmp).stock));
     (*tmp).collider = 0;
     check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
     (*lib).neko.position.cardinal = UpperRight;
     (*lib).infobulle.cardinal = Left;
-    neko_say((*lib).infobulle.message, (*tmp).message_bullets); }}
+printf("BULLETS::\n");
+printf("%s\n", (*tmp).message_bullets);
+    neko_say((*lib).infobulle.message, (*tmp).message_bullets); 
+    int i = 0;
+    while (i < 1024)
+    { if (((*lib).infobulle.message)[i].glyph > 126 || (((*lib).infobulle.message)[i].glyph < 32 && ((*lib).infobulle.message)[i].glyph != 10))
+      { ((*lib).infobulle.message[i]).glyph = 0; }
+      i += 1; }}
+  start = 1; }
