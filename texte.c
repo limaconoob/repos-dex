@@ -50,8 +50,7 @@ void adjust(char *message_bullets, int *mes)
 
 // Actualise l'info-bulle avec un nouveau message
 void neko_say(t_character *bulle, char *message)
-{ BZE(bulle, SPEC_CHARACTER_MAX);
-  if (message)
+{ if (message)
   { int i = 0;
     while (i < SPEC_CHARACTER_MAX)
     { (bulle[i]).glyph = message[i];
