@@ -9,6 +9,4 @@ void start(t_lbstat *lib, void **data)
   BZE(((*tmp).stock), 4096);
   BZE(((*tmp).actual), 4096);
   BZE((*tmp).message_bullets, 1024);
-  (*tmp).current = time(NULL);
-  (*tmp).collider = 0;
   *data = &tmp; }

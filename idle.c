@@ -221,14 +221,11 @@ char not_empty(void *message_bullets, int len)
 
 void idle(t_lbstat *lib, void **data)
 { (void)lib;
-  static int start = 0;
   t_cdir *tmp = (t_cdir *)(*data);
   icwd(&((*tmp).actual));
-  if (start && NCMP((*tmp).stock, (*tmp).actual, 4096))
+  if (NCMP((*tmp).stock, (*tmp).actual, 4096))
   { icwd(&((*tmp).stock));
-    (*tmp).collider = 0;
     check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
     (*lib).neko.position.cardinal = MiddleLeft;
     (*lib).infobulle.cardinal = Right;
-    neko_say((*lib).infobulle.message, (*tmp).message_bullets); }
-  start = 1; }
+    neko_say((*lib).infobulle.message, (*tmp).message_bullets); }}
