@@ -123,7 +123,7 @@ void check_dir(t_lbstat *lib, char *coucou, void *message_bullets)
         { int i = 0;
           while ((*line)[i] && (*line)[i] == ' ')
           { i += 1; }
-          if (!NCMP(&((*line)[i]), "NAME = ", 7) && LEN(&((*line)[i])) > 7)
+          if ((!NCMP(&((*line)[i]), "NAME = ", 7) || !NCMP(&((*line)[i]), "NAME := ", 8)) && LEN(&((*line)[i])) > 7)
           { push_front((char *)message_bullets, "Le nom de ce projet est ", &mes);
             push_sized((char *)message_bullets, &((*line)[i + 7]), LEN(&((*line)[i + 7])), &mes);
             push_blank((char *)message_bullets, &mes);
