@@ -220,8 +220,7 @@ char not_empty(void *message_bullets, int len)
   return ((*((char **)message_bullets))[len] ? 1 : 0); }
 
 void idle(t_lbstat *lib, void **data)
-{ (void)lib;
-  t_cdir *tmp = (t_cdir *)(*data);
+{ t_cdir *tmp = (t_cdir *)(*data);
   icwd(&((*tmp).actual));
   if (NCMP((*tmp).stock, (*tmp).actual, 4096))
   { icwd(&((*tmp).stock));
