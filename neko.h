@@ -145,7 +145,7 @@ typedef struct s_library_state {
 	unsigned char lock;
 } t_lbstat;
 
-void mount(t_lbstat *lib, void **data);
+void start(t_lbstat *lib, void **data);
 void idle(t_lbstat *lib, void **data);
 
 #endif
