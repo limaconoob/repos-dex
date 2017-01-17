@@ -1,13 +1,16 @@
 
 NAME := "repos-dex.dylib"
+SRC := gnl.c idle.c texte.c outils.c start.c wssplit.c
 
 default: all
 
 all:
-#	clang -dynamiclib -std=gnu99 gnl.c idle.c texte.c outils.c start.c wssplit.c -current_version 1.0 -compatibility_version 1.0 -fvisibility=hidden -o $(NAME)
-	gcc -shared -o $(NAME) gnl.c idle.c texte.c outils.c start.c wssplit.c
+	gcc -shared -o $(NAME) $(SRC)
 
 clean:
 	rm $(NAME)
 
-fclean: clean
+re: clean
+
+SILENT: all
+.PHONY: default all clean re
