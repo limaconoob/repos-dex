@@ -1,4 +1,4 @@
-NAME := "repos-dex.dylib"
+NAME := repos-dex.dylib
 SRC := gnl.c idle.c texte.c outils.c start.c wssplit.c
 
 .SILENT: all
