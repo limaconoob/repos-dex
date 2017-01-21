@@ -222,10 +222,10 @@ char not_empty(void *message_bullets, int len)
 void idle(t_lbstat *lib, void **data)
 { t_cdir *tmp = (t_cdir *)(*data);
   icwd(&((*tmp).actual));
-printf("STOCK::%s | ACTUAL::%s\n", (*tmp).stock, (*tmp).actual);
   if (NCMP((*tmp).stock, (*tmp).actual, 4096))
   { icwd(&((*tmp).stock));
     check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
-    (*lib).neko.position.cardinal = MiddleLeft;
-    (*lib).infobulle.cardinal = Right;
-    neko_say((*lib).infobulle.message, (*tmp).message_bullets); }}
+		(*lib).persona.sheet = Bust;
+    (*lib).persona.position.cardinal = MiddleLeft;
+		(*lib).tooltip.relative = Right;
+    neko_say((*lib).tooltip.message, (*tmp).message_bullets); }}
