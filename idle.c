@@ -222,6 +222,7 @@ char not_empty(void *message_bullets, int len)
 void idle(t_lbstat *lib, void **data)
 { t_cdir *tmp = (t_cdir *)(*data);
   icwd(&((*tmp).actual));
+printf("STOCK::%s | ACTUAL::%s\n", (*tmp).stock, (*tmp).actual);
   if (NCMP((*tmp).stock, (*tmp).actual, 4096))
   { icwd(&((*tmp).stock));
     check_dir(lib, (*tmp).actual, &((*tmp).message_bullets));
